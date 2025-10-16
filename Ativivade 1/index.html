@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabela Interativa de Alunos</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    th {
+      background-color: #3b5998;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #8b9dc3;
+    }
+
+    tr:nth-child(odd) {
+      background-color: #dfe3ee;
+    }
+
+    tr:hover {
+      background-color: #ffffff !important;
+      color: #FF4500;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    td.clicked {
+      background-color: #ffcccb !important;
+      border: 2px solid #ff4500;
+    }
+
+    .reprovado {
+      background-color: #ffdddd !important;
+      color: #b22222;
+      font-weight: bold;
+    }
+
+    #mensagem {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #3b5998;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #2d4373;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Tabela de Desempenho dos Alunos</h2>
+
+  <button onclick="filtrarReprovados()">Mostrar apenas reprovados</button>
+  <button onclick="mostrarTodos()">Mostrar todos</button>
+
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Nota P1</th>
+        <th>Nota P2</th>
+        <th>Nota T1</th>
+        <th>Nota Total</th>
+        <th>Faltas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ana</td><td>80</td><td>75</td><td>70</td><td>225</td><td>2</td>
+      </tr>
+      <tr>
+        <td>Gisele</td><td>65</td><td>70</td><td>60</td><td>195</td><td>4</td>
+      </tr>
+      <tr>
+        <td>Jane</td><td>90</td><td>85</td><td>80</td><td>255</td><td>1</td>
+      </tr>
+      <tr>
+        <td>Jorge</td><td>50</td><td>60</td><td>55</td><td>165</td><td>5</td>
+      </tr>
+      <tr>
+        <td>Marina</td><td>70</td><td>75</td><td>65</td><td>210</td><td>3</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="mensagem"></div>
+
+  <script>
+    const tabela = document.getElementById("tabela");
+    const mensagemDiv = document.getElementById("mensagem");
+
+    // Destacar reprovados ao carregar
+    document.addEventListener("DOMContentLoaded", function () {
+      const linhas = tabela.querySelectorAll("tbody tr");
+      linhas.forEach(linha => {
+        const notaTotal = parseFloat(linha.cells[4].innerText);
+        if (notaTotal < 210) {
+          linha.classList.add("reprovado");
+        }
+      });
+    });
+
+    // Clique em célula: mostrar mensagem abaixo
+    tabela.addEventListener("click", function(event) {
+      const celula = event.target;
+
+      if (celula.tagName === "TD") {
+        const todasCelulas = tabela.querySelectorAll("td");
+        todasCelulas.forEach(td => td.classList.remove("clicked"));
+        celula.classList.add("clicked");
+
+        const linha = celula.parentElement;
+        const nome = linha.cells[0].innerText;
+        const notaTotal = parseFloat(linha.cells[4].innerText);
+
+        let status = "";
+        if (notaTotal >= 210) {
+          status = `✅ ${nome} foi aprovado(a) com nota total de ${notaTotal}.`;
+        } else {
+          status = `❌ ${nome} foi reprovado(a) com nota total de ${notaTotal}.`;
+        }
+
+        mensagemDiv.innerText = status;
+      }
+    });
+
+    // Filtro: mostrar apenas reprovados
+    function filtrarReprovados() {
+      const linhas = tabela.querySelectorAll("tbody tr");
+      linhas.forEach(linha => {
+        if (!linha.classList.contains("reprovado")) {
+          linha.style.display = "none";
+        } else {
+          linha.style.display = "";
+        }
+      });
+      mensagemDiv.innerText = "🔍 Exibindo apenas alunos reprovados.";
+    }
+
+    // Mostrar todos
+    function mostrarTodos() {
+      const linhas = tabela.querySelectorAll("tbody tr");
+      linhas.forEach(linha => {
+        linha.style.display = "";
+      });
+
+    }
+  </script>
+
+</body>
+</html>
